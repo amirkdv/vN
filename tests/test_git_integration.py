@@ -1,3 +1,4 @@
+import pytest
 from .fixtures import *
 from vN import vNError
 

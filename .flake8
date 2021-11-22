@@ -1,0 +1,10 @@
+[flake8]
+exclude = .git,env,venv,__pycache__
+ignore =
+  E261 # allow one space before inline comments
+statistics = True
+max-line-length = 150
+count = True
+per-file-ignores =
+  # support the idiom `from .fixtures import *`
+  tests/*: F401, F403
