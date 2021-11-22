@@ -17,7 +17,7 @@ def main(args):
         raise vNError('Invalid range %s' % args.range)
 
     for row in repo.changelog(from_, to):
-        print('- %s: %s' % (row['date'], row['message'][0]))
+        print('- [%s] %s: %s' % (row['sha'][:8], row['date'], row['message'][0]))
 
 
 if __name__ == '__main__':
