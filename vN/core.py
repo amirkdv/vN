@@ -43,11 +43,23 @@ class GitRepo:
         tags = self.release_tags()
         return [self.state(tag).rc_id for tag in tags]
 
-    def changelog(self, commitish_from: str, commitish_to: str):
-        raise NotImplementedError
-
     def latest_release(self):
         return self.state().latest
+
+    def changelog(self, commitish_from: str, commitish_to: str = 'HEAD'):
+        git_cmd = [
+            'log', '{}..{}'.format(commitish_from, commitish_to),
+            '--merges', # merge commits only
+            '--format=format:%H' # sha only
+        ]
+        for sha in self.git_exec(git_cmd):
+            cmd = ['log', '-n1', sha, '--format=format:%B'] # commit message only
+            message = self.git_exec(cmd)
+
+            cmd = ['log', '-n1', sha, '--format=%ad', '--date=short'] # date only
+            date = self.git_exec(cmd)[0]
+
+            yield {'sha': sha, 'data': date, 'message': message}
 
 
 class GitState:

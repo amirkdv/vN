@@ -3,5 +3,3 @@ Spec:
 * cli tools
   - give me rc id of <commit>
   * changelog <commit>..<commit>
-* vN code
-  * changelog and tests
