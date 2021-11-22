@@ -58,3 +58,65 @@ def test_commit_and_tag(git_repo):
 
     assert old_state.sha == new_state.sha
     assert old_state.rc_id == new_state.rc_id
+
+
+def test_latest_release(git_repo):
+    assert git_repo.latest_release() == 1
+
+    git_repo.bash_exec("""
+        echo 'feature 1' >> features.txt
+        git add features.txt
+        git commit -m 'add feature 1'
+    """)
+    assert git_repo.latest_release() == 1
+
+    git_repo.bash_exec("""
+        git tag v3
+    """)
+    assert git_repo.latest_release() == 3
+
+
+def test_release_tags(git_repo):
+    assert git_repo.release_tags() == ['v1']
+
+    git_repo.bash_exec("""
+        echo 'feature 1' >> features.txt
+        git add features.txt
+        git commit -m 'add feature 1'
+    """)
+    assert git_repo.release_tags() == ['v1']
+
+    git_repo.bash_exec("""
+        git tag v2
+    """)
+    assert git_repo.release_tags() == ['v1', 'v2']
+
+    git_repo.bash_exec("""
+        git tag v2.1
+    """)
+    assert git_repo.release_tags() == ['v1', 'v2']
+
+    git_repo.bash_exec("""
+        git tag v4
+    """)
+    assert git_repo.release_tags() == ['v1', 'v2', 'v4']
+
+
+def test_release_rc_ids(git_repo):
+    assert git_repo.release_tags() == ['v1']
+
+    git_repo.bash_exec("""
+        echo 'feature 1' >> features.txt
+        git add features.txt
+        git commit -m 'add feature 1'
+    """)
+    rc_ids = git_repo.release_rc_ids()
+    assert len(rc_ids) == 1
+    assert rc_ids[0].release == 1
+
+    git_repo.bash_exec("""
+        git tag v2
+    """)
+    rc_ids = git_repo.release_rc_ids()
+    assert len(rc_ids) == 2
+    assert rc_ids[1].release == 2

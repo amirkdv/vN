@@ -1,9 +1,9 @@
 import re
 from pathlib import Path
 from typing import List
+
 from .shell import shell
 from .shell import bash
-
 from .exceptions import vNError
 
 
@@ -32,14 +32,19 @@ class GitRepo:
     def state(self, commitish: str = None) -> 'GitState':
         return GitState.parse(self.describe(commitish))
 
-    def releases(self) -> List['RC_ID']:
-        raise NotImplementedError
+    def release_tags(self) -> List[str]:
+        tags = self.git_exec(['tag', '-l'])
+        return [tag for tag in tags if re.match('^v[0-9]+$', tag)]
+
+    def release_rc_ids(self) -> List['RC_ID']:
+        tags = self.release_tags()
+        return [self.state(tag).rc_id for tag in tags]
 
     def changelog(self, commitish_from: str, commitish_to: str):
         raise NotImplementedError
 
     def latest_release(self):
-        raise NotImplementedError
+        return self.state().latest
 
 
 class GitState:
