@@ -1,4 +1,5 @@
 from .fixtures import *
+from vN import vNError
 
 
 def test_init_state(git_repo):
@@ -7,6 +8,12 @@ def test_init_state(git_repo):
     assert state.n_commits == 0
     assert state.dirty is False
     assert state.rc_id.release == 1
+
+
+def test_invalid_state(git_repo):
+    git_repo.state('v1')
+    with pytest.raises(vNError):
+        git_repo.state('v2')
 
 
 def test_dirty_state(git_repo):
