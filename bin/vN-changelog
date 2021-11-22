@@ -5,13 +5,16 @@ import argparse
 
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 from vN import GitRepo
-from vN.exceptions import run_safe
+from vN.exceptions import vNError, run_safe
 
 
 @run_safe
 def main(args):
     repo = GitRepo(args.root)
-    from_, to = args.range.split('..')
+    try:
+        from_, to = args.range.split('..')
+    except ValueError:
+        raise vNError('Invalid range %s' % args.range)
 
     for row in repo.changelog(from_, to):
         print('- %s: %s' % (row['date'], row['message'][0]))
@@ -20,6 +23,6 @@ def main(args):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Builds changelog between the given commits')
     parser.add_argument('-C', '--root', default='.', help='path to git repository, default is PWD')
-    parser.add_argument('range') # TODO help
+    parser.add_argument('range', help='Git commitish range, eg v2..HEAD, for rendering changelog')
     args = parser.parse_args()
     main(args)

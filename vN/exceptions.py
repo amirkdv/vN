@@ -1,3 +1,6 @@
+import sys
+
+
 class vNError(Exception):
     pass
 
