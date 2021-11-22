@@ -36,6 +36,9 @@ class GitRepo:
         tags = self.git_exec(['tag', '-l'])
         return [tag for tag in tags if re.match('^v[0-9]+$', tag)]
 
+    def release_exists(self, release: int) -> bool:
+        return 'v%d' % release in self.release_tags
+
     def release_rc_ids(self) -> List['RC_ID']:
         tags = self.release_tags()
         return [self.state(tag).rc_id for tag in tags]
@@ -125,7 +128,3 @@ class RC_ID:
             sha=self.sha,
             dirty='-dirty' if self.dirty else '',
         )
-
-    @property
-    def is_tagged(self):
-        raise NotImplementedError
