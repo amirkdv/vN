@@ -10,7 +10,7 @@ def run_safe(fn):
         try:
             fn(*args, **kwargs)
         except vNError as err:
-            sys.stderr.write(err + '\n')
+            sys.stderr.write(str(err) + '\n')
             sys.exit(1)
 
     return wrapped
