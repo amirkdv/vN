@@ -146,11 +146,13 @@ upcoming git tag from the rest of your workflow. New tags become a tool for
 _documenting_ the state of prod instead of being one of the variables involved
 in the internal logic of CI/CD.
 
-| git version     | RC ID               | Notes                                 |
+| git version †   | RC ID               | Notes                                 |
 |-----------------|---------------------|---------------------------------------|
 |`v4-9-g34cff88a` |`v5-rc-34cff88a`     | RC IDs look ahead; they refer to the next release that each commit could become.  |
 |`v5-0-g34cff88a` |`v5-rc-34cff88a`     | When we eventually tag a deployed commit, its RC id is unchanged! |
 |`v5-4-gf88a34cf` |`v6-rc-f88a34cf`     | And on we go to the next release |
+
+† as per [git describe](https://www.git-scm.com/docs/git-describe)
 
 ## CLI Tools
 
