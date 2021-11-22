@@ -23,7 +23,7 @@ def shell(cmd: List[str], **proc_kw) -> List[str]:
     out, err = proc.communicate()
     if proc.returncode != 0:
         sys.stderr.write(err)
-        raise vNShellError('Command failed: %s\n%s' % (' '.join(cmd), err))
+        raise vNShellError(err)
 
     lines = [line.rstrip() for line in out.split('\n')]
     return [line for line in lines if line]
