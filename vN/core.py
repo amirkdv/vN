@@ -63,7 +63,8 @@ class GitRepo:
 
 
 class GitState:
-    def __init__(self,
+    def __init__(
+        self,
         latest: int,
         n_commits: int,
         sha: str,
@@ -103,7 +104,8 @@ class GitState:
 
 
 class RC_ID:
-    def __init__(self,
+    def __init__(
+        self,
         release: int,
         sha: str,
         dirty: bool

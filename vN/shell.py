@@ -1,10 +1,10 @@
-import os
 import sys
 import subprocess
 from typing import List
 from tempfile import NamedTemporaryFile
 
 from .exceptions import vNError
+
 
 class vNShellError(vNError):
     pass
