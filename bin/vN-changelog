@@ -1,0 +1,25 @@
+#!/usr/bin/env python3
+import os
+import sys
+import argparse
+
+sys.path.append(os.path.dirname(os.path.dirname(__file__)))
+from vN import GitRepo
+from vN.exceptions import run_safe
+
+
+@run_safe
+def main(args):
+    repo = GitRepo(args.root)
+    from_, to = args.range.split('..')
+
+    for row in repo.changelog(from_, to):
+        print('- %s: %s' % (row['date'], row['message'][0]))
+
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description='Builds changelog between the given commits')
+    parser.add_argument('-C', '--root', default='.', help='path to git repository, default is PWD')
+    parser.add_argument('range') # TODO help
+    args = parser.parse_args()
+    main(args)
