@@ -59,7 +59,7 @@ class GitRepo:
             cmd = ['log', '-n1', sha, '--format=%ad', '--date=short'] # date only
             date = self.git_exec(cmd)[0]
 
-            yield {'sha': sha, 'data': date, 'message': message}
+            yield {'sha': sha, 'date': date, 'message': message}
 
 
 class GitState:
