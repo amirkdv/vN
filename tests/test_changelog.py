@@ -2,8 +2,6 @@ from .fixtures import *
 
 
 def test_changelog_non_merge_commit(git_repo):
-    state = git_repo.state()
-
     git_repo.bash_exec("""
         echo 'feature 1' >> features.txt
         git add features.txt
@@ -15,8 +13,6 @@ def test_changelog_non_merge_commit(git_repo):
 
 
 def test_changelog_merge_commit(git_repo):
-    state = git_repo.state()
-
     git_repo.bash_exec("""
         git checkout -b feature/1
         echo 'feature 1' >> features.txt
@@ -34,8 +30,6 @@ def test_changelog_merge_commit(git_repo):
 
 
 def test_changelog_multiple(git_repo):
-    state = git_repo.state()
-
     git_repo.bash_exec("""
         git checkout -b feature/1
         echo 'feature 1' >> features.txt
