@@ -1,15 +1,15 @@
 # vN
 
 vN is a a dead-simple git branching and artifact versioning model for
-continuously deployed services.
+continuously deployed services and data pipelines.
 
 vN is similar to
 [gitflow](https://nvie.com/posts/a-successful-git-branching-model/) and
 [oneflow](https://www.endoflineblog.com/oneflow-a-git-branching-model-and-workflow).
 While those models are quite complex, most of the complexity comes from having
-to maintain multiple different versions of a repo, as is common when one
-distributes software. In continuously deployed services, however, the
-requirements are different and vN uses these to significantly improve the git
+to maintain multiple different versions of a repo in production, as is common
+when one distributes software. In continuously deployed services, however, the
+requirements are different, and vN uses these to significantly simplify the git
 workflow.
 
 * [In a Nutshell](#in-a-nutshell)
@@ -26,6 +26,12 @@ workflow.
   * [Comparison with Other Models](#comparison-with-other-models)
 
 ## In a Nutshell
+
+In vN, unlike SemVer-inspired models, versions are linearly ordered: v1, v2, ...
+Its git branching workflow for development, deployment, and hotfixes imposes no
+extra overhead. Most importantly, [RC IDs](#stable-artifact-versioning-with-rc-ids)
+provide a stable way to version artifacts in a way that decouples CI/CD
+pipeline lifecycle from creation of git tags.
 
 The diagram below describes the [rules](#rules) of vN. This repository itself
 has followed these rules.
@@ -50,7 +56,7 @@ production, vN will probably not help you.
 Versions, aka git tags, have the form `vN`, ie v1, v2, ...
 
 This is a crucial assumption in vN. Without it (eg if you use SimVer) the
-[RC id](#artifact-versioning-with-rc-ids) trick collapses.
+[RC id](#stable-artifact-versioning-with-rc-ids) trick collapses.
 
 
 The act of releasing consists of:
@@ -75,6 +81,10 @@ hotfixes to production, all follow the usual standard workflow:
 2. commit and push, review, and repeat,
 3. merge back into main branch.
 
+The recommended workflow is to deploy from commits in the main branch,
+preferably but not necessarily the branch tip, with the exception of
+[hotfixes](#hotfix-workflow).
+
 vN generally doesn't care whether you use fast-forward merges or not.
 
 ### Hotfix Workflow
@@ -98,23 +108,18 @@ this simplicity a breath of fresh air.
 This is where vN's simplicity allows you to solve a whole host of problems that
 gitflow and other similar SemVer-inspired models struggle with.
 
-First, what is the problem? Let's say you have these typical requirements (see
-discussion on [motivation](#motivation)):
+#### What's the Problem?
 
-1. CI/CD pipeline is multi-stage, with different artifacts produced in upstream steps and consumed in downstream steps.
-1. The final artifact is a deployed instance of a service.
-1. (optional) CI/CD forces a staging step before roll out to production.
+A typical medium/large CI/CD pipeline is multi-stage, with various data
+artifacts produced in upstream steps and consumed in downstream steps.
 
-Naturally, your CI/CD pipeline needs to name/label all artifacts, including the
-final production artifacts, in such a way that we can tell which artifact
-belongs to which version after production has been updated. These labels could
-be anything from docker image tags in your registry to name of your deployed
-instances. And we want this naming scheme to make it easy to find out, in the
-future, which version of each artifact is deployed in production.
+These artifacts could be docker images, disk snapshots, S3 buckets, or even
+deployed instances of a service, all of which needs to be labeled by the CI/CD
+pipeline so that we can tell which artifact belongs to which version in the
+future.
 
-Let's say you're about to deploy the next version, say v9. Here's how things
-could go wrong if you naively retrofit SemVer tools like gitflow to CI/CD of
-services:
+Now, let's say we're about to deploy the next version, say v9. Here's how things
+could go wrong if we naively retrofit SemVer tools like gitflow:
 
 * You'd want your artifacts to refer to the new version v9. Maybe something
   like `v9-abcdef12` where the second token is the git commit SHA.
@@ -128,23 +133,14 @@ services:
   version (eg `v9-abcdef12`). This makes the already non-trivial branch/merge
   dance for releases even more unpleasant.
 
+#### RC IDs
+
 Here's how vN solves these problems:
 
-* Every commit is releasable as-is. No branch or tag requirements.
-  The recommended workflow is to deploy from commits in the main branch,
-  preferably but not necessarily the branch tip, with the exception of
-  [hotfixes](#hotfix-workflow).
-* Introduce RC IDs as a "stable" versioning scheme for CI/CD artifacts. The RC
-  id of a git commit is `v[N]-rc-[sha]` where `sha` is the git commit and `N`
-  is the first git tag that would include this commit. Here's the twist: this
-  tag need _not_ already exist. The RC id of your commit will be
-  `v9-rc-abcdef12` regardless of whether the `v9` tag already exists or not.
-  That is, as long as `v8` is already in your branch history.
-
-The power of RC ids is that they allow you to decouple the lifecycle of the
-upcoming git tag from the rest of your workflow. New tags become a tool for
-_documenting_ the state of prod instead of being one of the variables involved
-in the internal logic of CI/CD.
+* Every commit is a release candidate (RC).
+* Every commit gets an RC ID that's "stable" in the sense that you know
+  the one and only RC id of your commit as soon as the commit exists, regardless
+  of when, whether, and how it's eventually tagged in git.
 
 | git version †   | RC ID               | Notes                                 |
 |-----------------|---------------------|---------------------------------------|
@@ -153,6 +149,9 @@ in the internal logic of CI/CD.
 |`v5-4-gf88a34cf` |`v6-rc-f88a34cf`     | And on we go to the<br> next release |
 
 † as per [git describe](https://www.git-scm.com/docs/git-describe)
+
+The power of RC ids is that they allow you to decouple the lifecycle of git tags
+from the CI/CD pipeline, while preserving meaningful and unique artifact labels.
 
 ## CLI Tools
 
