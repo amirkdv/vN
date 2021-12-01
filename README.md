@@ -43,19 +43,15 @@ has followed these rules.
 ### The Big Assumption
 
 The linear versioning scheme of vN only makes sense if there is only
-one version in production most of the time. If you have this nice, strong
-constraint, then vN is for you.
-
-Even if you have multiple instances of the same _version_ deployed in
-production (eg separate deployment for separate customers), vN will continue to
-work. But if you need to maintain multiple versions of your system in
-production, vN will probably not help you.
+one version in production most of the time. To be more specific, the criteria is
+whether there is, at all times, a single "latest" tag that needs to be actively
+maintained.  If you have this nice, strong constraint then vN is for you!
 
 ### Releases
 
 Versions, aka git tags, have the form `vN`, ie v1, v2, ...
 
-This is a crucial assumption in vN. Without it (eg if you use SimVer) the
+This is a crucial assumption in vN. Without it (eg if you use SemVer) the
 [RC id](#stable-artifact-versioning-with-rc-ids) trick collapses.
 
 
